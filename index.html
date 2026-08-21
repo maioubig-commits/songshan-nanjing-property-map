@@ -161,10 +161,27 @@ function makeIcon(item){
   });
 }
 
+// 同一棟／同一座標的案件，把釘子平均散在小圈上，避免互相蓋住
+const spread = {};
+DATA.forEach(item => {
+  const k = item.lat.toFixed(6) + ',' + item.lon.toFixed(6);
+  (spread[k] = spread[k] || []).push(item);
+});
+Object.values(spread).forEach(group => {
+  group.forEach((item, idx) => {
+    item.sameSpot = group.length - 1;
+    if (group.length === 1) { item.mlat = item.lat; item.mlon = item.lon; return; }
+    const R = 11 + 3 * group.length;                      // 公尺
+    const th = (2 * Math.PI * idx) / group.length - Math.PI / 2;
+    item.mlat = item.lat + (R * Math.sin(th)) / 111320;
+    item.mlon = item.lon + (R * Math.cos(th)) / (111320 * Math.cos(item.lat * Math.PI / 180));
+  });
+});
+
 const markers = {};
 const bounds = [];
 DATA.forEach(item => {
-  const marker = L.marker([item.lat, item.lon], { icon: makeIcon(item) }).addTo(map);
+  const marker = L.marker([item.mlat, item.mlon], { icon: makeIcon(item) }).addTo(map);
   let html = `<div class="popup-name">${item.name}</div>`;
   html += `<div class="popup-addr">${item.addr}</div>`;
   html += `<div class="popup-row"><strong>總價 ${item.price.toLocaleString()} 萬</strong>`;
@@ -178,10 +195,11 @@ DATA.forEach(item => {
   if(item.use){ html += `<div class="popup-detail">${item.use}</div>`; }
   if(item.approx==='twhg'){ html += `<div class="popup-row" style="color:#6a6f63;">座標取自台灣房屋官網物件資料</div>`; }
   else if(item.approx){ html += `<div class="popup-row" style="color:#a4462f;">⚠ 座標為${item.approx==='district'?'行政區':'路段'}概略位置，非精確門牌</div>`; }
+  if(item.sameSpot){ html += `<div class="popup-row" style="color:#6a6f63;">同一棟另有 ${item.sameSpot} 件，釘子已略微錯開</div>`; }
   html += `<a class="popup-link" href="${caseHref(item)}"${item.link?' target="_blank" rel="noopener"':''}>查看詳情 →</a>`;
   marker.bindPopup(html, { maxWidth: 300 });
   markers[item.i] = marker;
-  bounds.push([item.lat, item.lon]);
+  bounds.push([item.mlat, item.mlon]);
 });
 const HOME=[[24.98,121.50],[25.10,121.63]];
 let userMoved=false;
