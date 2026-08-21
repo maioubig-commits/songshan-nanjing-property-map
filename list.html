@@ -161,7 +161,10 @@ footer.note b{color:var(--ink-2); font-weight:500}
 .sitenav a:hover{border-color:var(--accent); color:var(--accent)}
 .sitenav a[aria-current="page"]{background:var(--accent); border-color:var(--accent); color:var(--surface)}
 @media print{.sitenav{display:none}}
-table{min-width:1240px}
+table{min-width:1320px}
+.nm{min-width:9.5em}
+.addr{max-width:none; min-width:12em}
+td .dt{max-width:22ch}
 .tag.ad{background:var(--accent-soft); color:var(--accent-2); border-color:var(--accent-2)}
 .tag.exp{background:var(--danger-soft); color:var(--danger); border-color:var(--danger)}
 .tag.soon{background:var(--brass-soft); color:var(--brass); border-color:var(--brass)}
@@ -316,7 +319,7 @@ function render(){
     const groupFirst = sortKey==='cat' && r.cat!==prev; prev=r.cat;
     const tags=[
       r.view==='有KEY'?'<span class="tag key">🔑 有KEY</span>':'',
-      r.view&&r.view!=='有KEY'?`<span class="tag apx">${esc(r.view)}</span>`:'',
+      (r.view&&r.view!=='有KEY'&&r.view!=='洽承辦')?`<span class="tag apx">${esc(r.view)}</span>`:'',
     ].join('');
     return `<tr class="${groupFirst?'group-first':''}">
       <td><div class="nm">${esc(r.name)}</div>${r.use?`<div class="dt">${esc(r.use)}</div>`:''}</td>
