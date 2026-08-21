@@ -189,6 +189,7 @@ td .dt{max-width:22ch}
       <nav class="sitenav">
         <a href="index.html">🗺️ 案件地圖</a>
         <a href="list.html" aria-current="page">📋 案件總表</a>
+        <a href="https://store.twhg.com.tw/house/TAC9" target="_blank" rel="noopener">🏠 官網門市 ↗</a>
       </nav>
       <div class="stamp">
         <b id="totalCount">—</b>
@@ -322,7 +323,7 @@ function render(){
       (r.view&&r.view!=='有KEY'&&r.view!=='洽承辦')?`<span class="tag apx">${esc(r.view)}</span>`:'',
     ].join('');
     return `<tr class="${groupFirst?'group-first':''}">
-      <td><div class="nm"><a href="${r.link?r.link:'case/'+r.slug+'.html'}"${r.link?' target="_blank" rel="noopener"':''}>${esc(r.name)}</a></div>${r.use?`<div class="dt">${esc(r.use)}</div>`:''}</td>
+      <td><div class="nm"><a href="case/${r.slug}.html">${esc(r.name)}</a></div>${r.use?`<div class="dt">${esc(r.use)}</div>`:''}</td>
       <td class="cat">${esc(r.cat)}</td>
       <td class="addr">${esc(r.addr)}</td>
       <td class="num-cell">${r.ping!=null?r.ping.toFixed(2):'—'}</td>

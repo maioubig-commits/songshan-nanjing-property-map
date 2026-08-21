@@ -80,9 +80,12 @@
   .popup-name{font-family:'Noto Serif TC',serif; font-weight:700; font-size:15px; color:var(--ink); margin-bottom:4px;}
   .popup-addr{font-size:12px; color:var(--text-dim); margin-bottom:6px;}
   .popup-row{font-size:12.5px;}
-  .popup-link{display:inline-block;margin-top:10px;padding:7px 15px;border-radius:8px;
+  .popup-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+  .popup-link{display:inline-block;padding:7px 15px;border-radius:8px;
     background:var(--brass);color:#fff;text-decoration:none;font-size:13px;font-weight:600;}
   .popup-link:hover{background:#a4761f;}
+  .popup-link.ghost{background:#fff;color:var(--ink);border:1px solid var(--line);}
+  .popup-link.ghost:hover{border-color:var(--brass);color:var(--brass);}
   .item-link{font-size:11px;color:var(--brass);text-decoration:none;margin-left:auto;white-space:nowrap;}
   .item-link:hover{text-decoration:underline;}
   .popup-detail{margin-top:6px; padding-top:6px; border-top:1px solid var(--line); font-size:12px; color:var(--ink-soft);}
@@ -101,6 +104,7 @@
   <nav class="sitenav">
     <a href="index.html" aria-current="page">🗺️ 案件地圖</a>
     <a href="list.html">📋 案件總表</a>
+    <a href="https://store.twhg.com.tw/house/TAC9" target="_blank" rel="noopener">🏠 官網門市 ↗</a>
   </nav>
   <span class="count" id="countBadge">共 0 件</span>
 </header>
@@ -138,8 +142,6 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
-
-function caseHref(item){ return item.link ? item.link : 'case/'+item.slug+'.html'; }
 
 function makeIcon(item){
   const color = item.key ? '#b6842c' : '#3f6b5c';
@@ -196,7 +198,10 @@ DATA.forEach(item => {
   if(item.approx==='twhg'){ html += `<div class="popup-row" style="color:#6a6f63;">座標取自台灣房屋官網物件資料</div>`; }
   else if(item.approx){ html += `<div class="popup-row" style="color:#a4462f;">⚠ 座標為${item.approx==='district'?'行政區':'路段'}概略位置，非精確門牌</div>`; }
   if(item.sameSpot){ html += `<div class="popup-row" style="color:#6a6f63;">同一棟另有 ${item.sameSpot} 件，釘子已略微錯開</div>`; }
-  html += `<a class="popup-link" href="${caseHref(item)}"${item.link?' target="_blank" rel="noopener"':''}>查看詳情 →</a>`;
+  html += '<div class="popup-btns">';
+  html += `<a class="popup-link" href="case/${item.slug}.html">查看詳情 →</a>`;
+  if(item.link){ html += `<a class="popup-link ghost" href="${item.link}" target="_blank" rel="noopener">官網物件頁 ↗</a>`; }
+  html += '</div>';
   marker.bindPopup(html, { maxWidth: 300 });
   markers[item.i] = marker;
   bounds.push([item.mlat, item.mlon]);
@@ -263,7 +268,7 @@ function renderList(){
       </div>
       <div class="item-addr">${item.addr}</div>
       <div class="item-meta">${[item.ping?item.ping+'坪':'',item.layout,item.age?'屋齡'+item.age:'',item.agent?'承辦 '+item.agent:''].filter(Boolean).join(' ｜ ')}</div>
-      <div class="item-tags">${tags}<a class="item-link" href="${caseHref(item)}"${item.link?' target="_blank" rel="noopener"':''}>詳情 ↗</a></div>
+      <div class="item-tags">${tags}<a class="item-link" href="case/${item.slug}.html">詳情 ↗</a></div>
     </div>`;
   }).join('');
   list.querySelectorAll('.item').forEach(el=>{
